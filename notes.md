@@ -16,7 +16,7 @@ anvil - deploy a local blockchain
 # Run Foundry Forge Tests + rpc forks #
 - To run tests on our contracts we write tests in the test folder. We then run them with 'forge test test/FundMeTest.t.sol'
 - A shortcut - we can run 'forge test --match-test someTestFunctionName' to only run a test on a particular function
-- To run tests on our local anvil environment on data feeds running on sepholia (chainlink price data feeds for exmaple), we can add a --fork-url modifier to our test commands. This will simulate the chain of whatever rpc url we pass in. 'forge test --match-test testPriceFeedVersion --fork-url https://eth-sepolia.g.alchemy.com/v2/xPu9JtoaTqrBv1g0m_PsPmgET5Sp7K66'
+- To run tests on our local anvil environment on data feeds running on sepholia (chainlink price data feeds for exmaple), we can add a --fork-url modifier to our test commands. This will simulate the chain of whatever rpc url we pass in. 'forge test --match-test testPriceFeedVersion --fork-url https://eth-sepolia.g.alchemy.com/v2/xPu...'
 
 
 # Foundry scripts to deploy and call functions on a deployed contract - forge script + cast # 
