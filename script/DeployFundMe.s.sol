@@ -10,7 +10,7 @@ contract DeployFundMe is Script {
 
     function run() external returns (FundMe){
         vm.startBroadcast(); // vm functions come from the forge foundry scripts cheatcodes, tells our code when to stat and end so we dont spend gas outside these functions
-        FundMe fundMe = new FundMe(); // Create a new instance of FundMe
+        FundMe fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306); // Create a new instance of FundMe with the pricefeed contract from the chain we want to run on
         vm.stopBroadcast();
         return fundMe;
     }

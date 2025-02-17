@@ -12,21 +12,25 @@ contract FundMe {
     // Lets us use the functions in PriceConverter.sol on all uint256 types
     using PriceConverter for uint256;
 
-    uint256 public constant MINIMUM_USD = 5e18; 
 
     address[] public funders;
     mapping (address => uint256) public addressToAmountFunder;
 
-    address public owner;
 
-    constructor() {
+    uint256 public constant MINIMUM_USD = 5e18; 
+    address public owner;
+    AggregatorV3Interface private s_priceFeed;
+ 
+    // Passing in a pricefeed makes our code more modular since we dont have to refactor for a new chain each time - we can specify the pricefeed address of the chain we are deploying on
+    constructor(address priceFeed) {
         owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
     function fund() public payable { 
         // ** If this require statement fails, nothing after this line of code will execute, and gas will be refunded for all computation after this line.
         // ** Also, if a state variable is changed in the line before this require statement and the require fails, the state variable chnage will be reset to original state
-        require(msg.value.getConversionRate() >= MINIMUM_USD, "Didn't send enough ETH");
+        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "Didn't send enough ETH");
         funders.push(msg.sender);
         addressToAmountFunder[msg.sender] = addressToAmountFunder[msg.sender] + msg.value;
     }
@@ -56,9 +60,8 @@ contract FundMe {
         require(callSuccess, "Call failed");
     }
 
-    function getVersion() public view returns (uint256) { // This will only work if run on sepholia testnet since thats where this contract address exists
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
-        return priceFeed.version();
+    function getVersion() public view returns (uint256) { // Return the version of the chainlink price feed
+        return s_priceFeed.version();
     }
 
     // Set up a modifier that only allows the contract owner to call certain functions
