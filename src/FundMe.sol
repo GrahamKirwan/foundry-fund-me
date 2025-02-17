@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.24; 
 
 // Import our PriceConverter library 
 import {PriceConverter} from './PriceConverter.sol';
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+
 
 contract FundMe {
 
     // Lets us use the functions in PriceConverter.sol on all uint256 types
     using PriceConverter for uint256;
 
-    uint256 public minimumUSD = 5e18; 
+    uint256 public constant MINIMUM_USD = 5e18; 
 
     address[] public funders;
     mapping (address => uint256) public addressToAmountFunder;
@@ -24,7 +26,7 @@ contract FundMe {
     function fund() public payable { 
         // ** If this require statement fails, nothing after this line of code will execute, and gas will be refunded for all computation after this line.
         // ** Also, if a state variable is changed in the line before this require statement and the require fails, the state variable chnage will be reset to original state
-        require(msg.value.getConversionRate() >= minimumUSD, "Didn't send enough ETH");
+        require(msg.value.getConversionRate() >= MINIMUM_USD, "Didn't send enough ETH");
         funders.push(msg.sender);
         addressToAmountFunder[msg.sender] = addressToAmountFunder[msg.sender] + msg.value;
     }
@@ -52,6 +54,11 @@ contract FundMe {
         // call (lower level, reccommended since its most gas effecient)
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
+    }
+
+    function getVersion() public view returns (uint256) { // This will only work if run on sepholia testnet since thats where this contract address exists
+        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        return priceFeed.version();
     }
 
     // Set up a modifier that only allows the contract owner to call certain functions
