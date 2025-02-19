@@ -4,6 +4,7 @@
 // Keep track of contract address acorss different chains
 
 import {Script} from "../lib/forge-std/src/Script.sol";
+import {MockV3Aggregator} from "../test/mocks/Mockv3Aggregator.sol";
 
 pragma solidity ^0.8.24;
 
@@ -41,7 +42,15 @@ contract HelperConfig is Script {
         return mainnetConfig;
     }
 
-    function getAnvilEthConfig() public pure returns (NetworkConfig memory) {
+    function getAnvilEthConfig() public returns (NetworkConfig memory) {
         // price feed address
+
+        vm.startBroadcast(); // Run a mock deploy and deploy our mock price feed contract that will return an address which we can use similairy to the above
+        MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(8, 2000e8);
+        vm.stopBroadcast();
+        
+        NetworkConfig memory anvilConfig = NetworkConfig(address(mockV3Aggregator));
+        return anvilConfig;
     }
+
 }
