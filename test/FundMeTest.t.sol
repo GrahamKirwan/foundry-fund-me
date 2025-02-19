@@ -21,10 +21,17 @@ contract FundMeTest is Test {
     }
 
     function testOwnerIsMessageSender() public view {
-        assertEq(fundMe.owner(), address(this));
+        assertEq(fundMe.owner(), msg.sender);
     }
 
-    function testPriceFeedVersion() public view {
-        assertEq(fundMe.getVersion(), 4);
+    function testPriceFeedVersion() public view { // Test version depending on what chain we are testing on
+        uint256 version;
+        if (block.chainid == 11155111) {
+            version = fundMe.getVersion(); 
+            assertEq(version, 4);
+        } else if (block.chainid == 1) {
+            version = fundMe.getVersion();
+            assertEq(version, 6);
+        }
     }
 }

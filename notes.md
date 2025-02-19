@@ -33,3 +33,6 @@ anvil - deploy a local blockchain
 
 # Install Chainlink Brownie Contracts repo to be able to use chainlink data feeds in our foundry setup
 - 'forge install https://github.com/smartcontractkit/chainlink-brownie-contracts --no-commit'
+
+# Mock price feed #
+- When testing we dont always want to be making calls to a real alchemy node on the sepholia chain since its making testing much slower and runs up the alchemy bill. So we can create our own anvile chain mock price feed script to use during testing - HelperConfig.s.sol
