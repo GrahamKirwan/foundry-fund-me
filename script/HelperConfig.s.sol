@@ -25,7 +25,7 @@ contract HelperConfig is Script {
         } else if (block.chainid == 1) {
             currentActiveNetwork = getMainnetEthConfig();
         } else {
-            currentActiveNetwork = getAnvilEthConfig();
+            currentActiveNetwork = getOrCreateAnvilEthConfig();
         }
     }
 
@@ -36,17 +36,20 @@ contract HelperConfig is Script {
         return sepoliaConfig;
     }
 
-        function getMainnetEthConfig() public pure returns (NetworkConfig memory) {
+    function getMainnetEthConfig() public pure returns (NetworkConfig memory) {
         // price feed address
         NetworkConfig memory mainnetConfig = NetworkConfig(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
         return mainnetConfig;
     }
 
-    function getAnvilEthConfig() public returns (NetworkConfig memory) {
-        // price feed address
+    function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {
+        
+        if(currentActiveNetwork.priceFeed != address(0)) { // If there is already an anvil chain deployed then just use that and return out of function
+            return currentActiveNetwork;
+        }
 
         vm.startBroadcast(); // Run a mock deploy and deploy our mock price feed contract that will return an address which we can use similairy to the above
-        MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(8, 2000e8);
+        MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(8, 2000e8); 
         vm.stopBroadcast();
         
         NetworkConfig memory anvilConfig = NetworkConfig(address(mockV3Aggregator));
