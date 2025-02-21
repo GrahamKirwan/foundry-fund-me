@@ -10,6 +10,9 @@ pragma solidity ^0.8.24;
 
 contract HelperConfig is Script {
 
+    uint8 DECIMALS = 8;
+    int256 INITIAL_ANSWER = 2000e8;
+
     // If we are on a local anvil, we deploy mocks
     // Otherwise, grab the exisitng address from the live network
     
@@ -49,7 +52,7 @@ contract HelperConfig is Script {
         }
 
         vm.startBroadcast(); // Run a mock deploy and deploy our mock price feed contract that will return an address which we can use similairy to the above
-        MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(8, 2000e8); 
+        MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(DECIMALS, INITIAL_ANSWER); 
         vm.stopBroadcast();
         
         NetworkConfig memory anvilConfig = NetworkConfig(address(mockV3Aggregator));
