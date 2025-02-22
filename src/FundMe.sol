@@ -13,8 +13,8 @@ contract FundMe {
     using PriceConverter for uint256;
 
 
-    address[] public funders;
-    mapping (address => uint256) public addressToAmountFunder;
+    address[] private s_funders;
+    mapping (address => uint256) private s_addressToAmountFunder;
 
 
     uint256 public constant MINIMUM_USD = 5e18; 
@@ -31,20 +31,20 @@ contract FundMe {
         // ** If this require statement fails, nothing after this line of code will execute, and gas will be refunded for all computation after this line.
         // ** Also, if a state variable is changed in the line before this require statement and the require fails, the state variable chnage will be reset to original state
         require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "Didn't send enough ETH");
-        funders.push(msg.sender);
-        addressToAmountFunder[msg.sender] = addressToAmountFunder[msg.sender] + msg.value;
+        s_funders.push(msg.sender);
+        s_addressToAmountFunder[msg.sender] = s_addressToAmountFunder[msg.sender] + msg.value;
     }
 
     function withdraw() public onlyOwner {
 
         // Reset the mapping amounts
-        for (uint256 i = 0; i < funders.length; i++) {
-            address funder = funders[i];
-            addressToAmountFunder[funder] = 0;
+        for (uint256 i = 0; i < s_funders.length; i++) {
+            address funder = s_funders[i];
+            s_addressToAmountFunder[funder] = 0;
         }
 
         // Rest the array
-        funders = new address[](0);
+        s_funders = new address[](0);
 
         // Withdraw the funds - 3 ways to do this in solidity (transfer, send, call)
         
@@ -78,6 +78,16 @@ contract FundMe {
     // Route any transactions that send eth directly to the contract instead of calling the fund function to fund()
     fallback() external payable {
         fund();
+    }
+
+    // View / Pure functions (Getters) - These are used so our storage variables can be set to priavte for gas effeciency and also makes our code much more readable
+
+    function getAddressToAmountFunded(address fundingAddress) external view returns (uint256) {
+        return s_addressToAmountFunder[fundingAddress];
+    }
+
+    function getFunder(uint256 index) external view returns (address) {
+        return s_funders[index];
     }
 
 }
