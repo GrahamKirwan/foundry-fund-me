@@ -18,7 +18,7 @@ contract FundMe {
 
 
     uint256 public constant MINIMUM_USD = 5e18; 
-    address public owner;
+    address private owner;
     AggregatorV3Interface private s_priceFeed;
  
     // Passing in a pricefeed makes our code more modular since we dont have to refactor for a new chain each time - we can specify the pricefeed address of the chain we are deploying on
@@ -88,6 +88,10 @@ contract FundMe {
 
     function getFunder(uint256 index) external view returns (address) {
         return s_funders[index];
+    }
+
+    function getOwner() external view returns (address) {
+        return owner;
     }
 
 }
