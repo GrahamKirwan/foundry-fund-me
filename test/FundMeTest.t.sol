@@ -34,4 +34,9 @@ contract FundMeTest is Test {
             assertEq(version, 6);
         }
     }
+
+    function testFundFailsWithoutEnoughEth() public {
+        vm.expectRevert(); // This is esentially the opposite of 'assertEq' - the test will pass if the next line of code after this fails
+        fundMe.fund(); // send 0 value - if transaction is empty this line will fail and the test will pass
+    }
 }
