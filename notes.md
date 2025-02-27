@@ -38,3 +38,8 @@ anvil - deploy a local blockchain
 - When testing we dont always want to be making calls to a real alchemy node on the sepholia chain since its making testing much slower and runs up the alchemy bill. So we can create our own anvile chain mock price feed script to use during testing - HelperConfig.s.sol
 
 Forger chisel for testing solidity right from the command line
+
+# Gas Optimizations #
+- To calculate gas costs on tests with foundry we can run 'forge snapshot'. This will save a .gas-snapshot file with a breakdown
+- **note** When runnig tests on our local anvil chain it defaults gas prices to zero for the fake 'prank' address that deploy and use the contracts
+- So to simulate our tests with our fake users using fake gas we can use a cheatcode from foundry in our codebase vm.txGasPrice(12000)

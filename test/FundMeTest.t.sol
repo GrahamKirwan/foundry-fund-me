@@ -72,9 +72,15 @@ contract FundMeTest is Test {
         uint256 startingOwnerBalance = fundMe.getOwner().balance;
         uint256 startingFundMeBalance = address(fundMe).balance;
 
-        // Act
+        // Act (nb - gas functions are not neccessary here)
+        uint256 gasStart = gasleft(); // gasleft() is a built in function to let us know the gas left that was sent with a transaction
+        vm.txGasPrice(1000); // Foundry cheatcode to simulate gas usage when calling function
         vm.prank(fundMe.getOwner());
         fundMe.withdraw();
+
+        uint256 gasEnd = gasleft();
+        uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
+        console.log(gasUsed);
 
         // Assert
         uint256 endingOwnerBalance = fundMe.getOwner().balance;
