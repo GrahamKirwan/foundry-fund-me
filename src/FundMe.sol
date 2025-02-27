@@ -18,12 +18,12 @@ contract FundMe {
 
 
     uint256 public constant MINIMUM_USD = 5e18; 
-    address private owner;
+    address private immutable i_owner;
     AggregatorV3Interface private s_priceFeed;
  
     // Passing in a pricefeed makes our code more modular since we dont have to refactor for a new chain each time - we can specify the pricefeed address of the chain we are deploying on
     constructor(address priceFeed) {
-        owner = msg.sender;
+        i_owner = msg.sender;
         s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
@@ -36,9 +36,10 @@ contract FundMe {
     }
 
     function withdraw() public onlyOwner {
+        uint256 fundersLength = s_funders.length; // Do this for gas optimization - this way we read from storage once and then loop through a memory variable instead of stoarge variable to save big on gas costs 
 
         // Reset the mapping amounts
-        for (uint256 i = 0; i < s_funders.length; i++) {
+        for (uint256 i = 0; i < fundersLength; i++) {
             address funder = s_funders[i];
             s_addressToAmountFunder[funder] = 0;
         }
@@ -66,7 +67,7 @@ contract FundMe {
 
     // Set up a modifier that only allows the contract owner to call certain functions
     modifier onlyOwner() {
-        require (msg.sender == owner, "Must be owner to withdraw");
+        require (msg.sender == i_owner, "Must be owner to withdraw");
         _; // This means anything else in a function code will excecute at this point
     }
 
@@ -91,7 +92,7 @@ contract FundMe {
     }
 
     function getOwner() external view returns (address) {
-        return owner;
+        return i_owner;
     }
 
 }
